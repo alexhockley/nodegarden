@@ -28,6 +28,10 @@
   render();
 
   window.addEventListener('resize', init);
+  window.addEventListener("mousedown",function(event){
+    addRemove(event);
+  });
+
 
   function init() {
     wWidth = window.innerWidth * pixelRatio;
@@ -35,7 +39,7 @@
     wArea = wWidth * wHeight;
 
     // calculate nodes needed
-    nodes.length = Math.sqrt(wArea) / 25 | 0;
+    nodes.length = 1 | 0;
 
     // set canvas size
     canvas.width = wWidth;
@@ -56,6 +60,59 @@
         link: null,
         pos: false
       };
+    }
+  }
+
+  function addRemove(event)
+  {
+    if(event.button == 0)
+    {
+      var oldLen = nodes.length;
+      nodes.length++;
+
+      nodes[oldLen] = {
+        x: event.layerX,
+        y: event.layerY,
+        vx: Math.random() * 1 - 0.5,
+        vy: Math.random() * 1 - 0.5,
+        m: Math.random() * 1.5 + 1,
+        link: null,
+        pos: false
+      };
+
+    }
+    if(event.button == 1)
+    {
+      var locX = event.layerX;
+      var locY = event.layerY;
+
+      var oldLen = nodes.length;
+      var newNodes = new Array(oldLen-1);
+
+      var toRemove = -1;
+      var closest = 100000;
+      //find the closest one to cursor and rebuild the node list with one less
+      for(var i = 0; i < nodes.length; i++)
+      {
+
+        var dist = Math.sqrt(Math.abs(nodes[i].x-locX) + Math.abs(nodes[i].y-locY));
+
+        if(dist < closest)
+        {
+          toRemove = i;
+          closest = dist;
+        }
+      }
+
+      for(var i = 0, j=0; i < nodes.length; i++)
+      {
+        if(i !== toRemove)
+        {
+          newNodes[j] = nodes[i];
+          j++;
+        }
+      }
+      nodes = newNodes;
     }
   }
 
@@ -123,9 +180,10 @@
           force = 0.025;
         }
 
+
         // draw gravity lines
         ctx.beginPath();
-        ctx.strokeStyle = 'rgba(63,63,63,' + force * 40 + ')';
+        ctx.strokeStyle = 'rgba(67,67,67,'+ force * 50 + ')';
         ctx.moveTo(nodeA.x, nodeA.y);
         ctx.lineTo(nodeB.x, nodeB.y);
         ctx.stroke();
