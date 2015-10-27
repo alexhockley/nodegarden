@@ -27,6 +27,7 @@
   init();
   render();
 
+  //add event listeners to the page
   window.addEventListener('resize', init);
   window.addEventListener("mousedown",function(event){
     addRemove(event);
@@ -63,13 +64,18 @@
     }
   }
 
+  //Function to determine whether or not to add or remove a node based on js event click
   function addRemove(event)
   {
+
+    //left click
     if(event.button == 0)
     {
+      //get the new last index and increase the size of the array
       var oldLen = nodes.length;
       nodes.length++;
 
+      //create a new random sized node at the mouse pointer
       nodes[oldLen] = {
         x: event.layerX,
         y: event.layerY,
@@ -81,22 +87,34 @@
       };
 
     }
+
+    //middle click
     if(event.button == 1)
     {
+
+      //get the click location
       var locX = event.layerX;
       var locY = event.layerY;
 
+      //get the old length of the node array
       var oldLen = nodes.length;
+
+      //create a new array which is one smaller
       var newNodes = new Array(oldLen-1);
 
+      //initialize the index to remove as an invalid one
       var toRemove = -1;
+
+      //initialize the closest distance to be 100000 units, which is way too big to be on the screen
       var closest = 100000;
+
       //find the closest one to cursor and rebuild the node list with one less
       for(var i = 0; i < nodes.length; i++)
       {
+        //calculate distance from click using pythagorean theorem
+        var dist = Math.sqrt(Math.pow(nodes[i].x-locX,2) + Math.pow(nodes[i].y-locY,2));
 
-        var dist = Math.sqrt(Math.abs(nodes[i].x-locX) + Math.abs(nodes[i].y-locY));
-
+        //if closer, this is new closest, and save the array index
         if(dist < closest)
         {
           toRemove = i;
@@ -104,6 +122,7 @@
         }
       }
 
+      //manually copy the node array with the closest node removed
       for(var i = 0, j=0; i < nodes.length; i++)
       {
         if(i !== toRemove)
